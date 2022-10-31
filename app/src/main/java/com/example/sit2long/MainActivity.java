@@ -1,7 +1,13 @@
 package com.example.sit2long;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.view.View;
@@ -75,6 +81,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onFinish() {
+                sendNotification();
                 mTimerRunning = false;
                 mButtonStartPause.setText("start");
                 mButtonStartPause.setVisibility(View.INVISIBLE);
@@ -107,5 +114,27 @@ public class MainActivity extends AppCompatActivity {
         String timeLeftFormatted = String.format(Locale.getDefault(), "%02d:%02d", mins, secs);
 
         mTextViewCountDown.setText(timeLeftFormatted);
+    }
+
+    private void sendNotification() {
+        NotificationChannel channel = null;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            channel = new NotificationChannel("sit2LongChanel",
+                    "Sit2Long", NotificationManager.IMPORTANCE_DEFAULT);
+
+            NotificationManager manager = getSystemService(NotificationManager.class);
+
+            manager.createNotificationChannel(channel);
+
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "sit2LongChanel")
+                    .setSmallIcon(R.drawable.ic_launcher_background)
+                    .setContentTitle("Sit2Long")
+                    .setContentText("You have sat too long, you need to stand up and walk");
+            Notification notification = builder.build();
+            NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(this);
+
+            notificationManagerCompat.notify(1,notification);
+
+        }
     }
 }
